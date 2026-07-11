@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+out/
+
+# foundry
+cache/
+broadcast/
+
+# env
+.env*
+!.env.example
+
+# coverage
+coverage/
+
+# logs
+*.log
+
+# editor/OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
