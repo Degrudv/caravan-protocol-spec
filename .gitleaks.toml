@@ -1,17 +1,7 @@
-title = "caravan gitleaks config"
-
-# Extend gitleaks' built-in default ruleset (secret-detection rules) instead of
-# redefining detection rules from scratch.
 [extend]
 useDefault = true
 
 [allowlist]
-description = "Repo-wide allowlist for known-safe, publicly documented test values"
-regexes = [
-  '''test test test test test test test test test test test junk''',
-]
-
-# The regex above is the well-known Foundry/Anvil default developer mnemonic
-# (see https://book.getfoundry.sh/reference/anvil/ - deterministic default
-# accounts). It is intentionally public, funds no real value, and is safe to
-# allowlist across every Caravan repository, all of which are testnet-only.
+description = "Canonical public parameter manifest (no secrets by construction), synthetic test fixtures (high-entropy hex ids/hashes), and the anvil well-known test mnemonic"
+paths = ['''params/caravan\.params\.json''', '''fixtures/.*\.json''']
+regexes = ['''test test test test test test test test test test test junk''']
