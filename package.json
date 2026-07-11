@@ -1,8 +1,9 @@
 {
-  "name": "@caravan/protocol-spec",
+  "name": "@degrudv/caravan-spec",
+  "caravanCanonicalName": "@caravan/spec",
   "version": "0.0.1-alpha.0",
   "private": false,
-  "description": "canonical protocol spec, JSON schemas, VFM predicate definitions, parameter manifest. EXPERIMENTAL \u2014 TEST NETWORK ONLY \u2014 NOT A FINANCIAL PRODUCT OR SERVICE \u2014 NO REAL FUNDS \u2014 AS IS, NO WARRANTY, NO LIABILITY \u2014 USE AT YOUR OWN RISK",
+  "description": "canonical protocol spec, JSON schemas, VFM predicate definitions, parameter manifest. EXPERIMENTAL — TEST NETWORK ONLY — NOT A FINANCIAL PRODUCT OR SERVICE — NO REAL FUNDS — AS IS, NO WARRANTY, NO LIABILITY — USE AT YOUR OWN RISK",
   "license": "Apache-2.0",
   "type": "module",
   "engines": {
@@ -10,11 +11,18 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "files": [
-    "dist"
+    "dist",
+    "schemas",
+    "params",
+    "vfm",
+    "well-known"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
@@ -23,6 +31,8 @@
   "packageManager": "pnpm@9.15.9",
   "devDependencies": {
     "@types/node": "^20",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "eslint": "^9",
     "prettier": "^3",
     "typescript": "^5",

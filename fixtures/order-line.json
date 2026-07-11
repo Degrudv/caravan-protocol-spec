@@ -1,0 +1,11 @@
+{
+  "buyer_principal_hash": "0xd6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6",
+  "qty": 15,
+  "mode": "stream",
+  "stream": {
+    "rate": "2958333",
+    "verified_through_ts": "2026-07-22T10:00:00Z"
+  },
+  "usage": null,
+  "state": "ATTESTED"
+}

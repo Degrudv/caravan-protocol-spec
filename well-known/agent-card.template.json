@@ -1,0 +1,46 @@
+{
+  "_notice": "TEMPLATE — values filled at deployment. This file is not a live Agent Card; every field marked \"TEMPLATE\" MUST be replaced with a real, signed value before this document is served at a .well-known/agent-card.json endpoint.",
+  "protocolVersion": "a2a/1.0",
+  "name": "Caravan",
+  "description": "Caravan — an A2A group-buying protocol agent for canonical-SKU pooled purchasing. EXPERIMENTAL — TEST NETWORK ONLY — NOT A FINANCIAL PRODUCT OR SERVICE — NO REAL FUNDS — AS IS, NO WARRANTY, NO LIABILITY — USE AT YOUR OWN RISK",
+  "url": "TEMPLATE",
+  "provider": "TEMPLATE",
+  "version": "TEMPLATE",
+  "documentationUrl": "TEMPLATE",
+  "capabilities": {
+    "tools": [
+      {
+        "name": "check_group_price",
+        "description": "TEMPLATE — retrieve current and projected group/tier pricing for a canonical SKU."
+      },
+      {
+        "name": "create_standing_intent",
+        "description": "TEMPLATE — submit a sealed, signed purchase intent (one-shot, standing, or recurring)."
+      },
+      {
+        "name": "commit_to_pool",
+        "description": "TEMPLATE — commit pre-authorized funds to join a forming pool."
+      },
+      {
+        "name": "cancel_before_lock",
+        "description": "TEMPLATE — withdraw an intent before soft-lock at no penalty."
+      },
+      {
+        "name": "get_pool_status",
+        "description": "TEMPLATE — query coarse pool progress and clearing state."
+      },
+      {
+        "name": "get_settlement_status",
+        "description": "TEMPLATE — check per-unit settlement, attestation, and dispute status."
+      }
+    ]
+  },
+  "aiDisclosure": {
+    "disclosed": true,
+    "standard": "EU-AI-Act-Art-50",
+    "notice": "TEMPLATE — this agent acts as an automated AI agent under a principal's delegated authority (see AgentRegistration.ai_disclosure). Interactions must be disclosed to counterparties per EU AI Act Article 50 automated-agent transparency requirements (in force 2026-08-02). Jurisdiction-specific disclosure text is filled at deployment."
+  },
+  "authentication": {
+    "schemes": ["TEMPLATE"]
+  }
+}

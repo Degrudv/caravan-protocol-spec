@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/pool.schema.json",
+  "title": "Pool",
+  "description": "A weekly-window pool clearing intents against a StandingOffer's tier curve (§5.1, §5.3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "pool_id",
+    "window_id",
+    "sku_id",
+    "offer_id",
+    "state",
+    "members",
+    "clearing",
+    "fee_schedule_pinned",
+    "policy_version_pinned",
+    "escrow_addr",
+    "match_proof"
+  ],
+  "properties": {
+    "pool_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "window_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sku_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]+(\\.[A-Z0-9]+)*$"
+    },
+    "offer_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "FORMING",
+        "SOFT_LOCK",
+        "HARD_LOCK",
+        "EXECUTING",
+        "VERIFYING",
+        "STREAMING",
+        "SETTLED",
+        "PARTIAL",
+        "FAILED",
+        "DISPUTED"
+      ],
+      "description": "FORMING -> SOFT_LOCK -> HARD_LOCK -> EXECUTING -> VERIFYING/STREAMING -> SETTLED | PARTIAL | FAILED | DISPUTED (§5.1)."
+    },
+    "members": {
+      "type": "array",
+      "description": "Revealed only at HARD_LOCK, only in-contract (§5.1). Each entry is an OrderLine ($defs) sub-schema.",
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/order-line.schema.json#/$defs/OrderLine"
+      }
+    },
+    "clearing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tier_reached", "uniform_price", "cleared_qty"],
+      "properties": {
+        "tier_reached": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "1-based index into the winning StandingOffer.tier_curve entry."
+        },
+        "uniform_price": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "USDC 6-decimal base units, string-encoded integer. Must satisfy uniform_price * (1 + buyer_fee) < bonded_reference_price (§5.3, §6.3)."
+        },
+        "cleared_qty": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "fee_schedule_pinned": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Fee schedule version this pool is pinned to forever (params.fees.pinnedPerPool)."
+    },
+    "policy_version_pinned": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Policy version this pool is pinned to; upgrades never touch existing pools (§6.8)."
+    },
+    "escrow_addr": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{40}$"
+    },
+    "match_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intents_root", "transcript_commit", "tee_attestation"],
+      "properties": {
+        "intents_root": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{64}$",
+          "description": "Merkle root of the sealed intent set committed on-chain at window open/close."
+        },
+        "transcript_commit": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{64}$",
+          "description": "Commitment hash of the matcher's clearing transcript."
+        },
+        "tee_attestation": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]+$",
+          "description": "TEE attestation blob (AWS Nitro; mock attestation on testnet per params.matcher.trust)."
+        }
+      }
+    }
+  }
+}

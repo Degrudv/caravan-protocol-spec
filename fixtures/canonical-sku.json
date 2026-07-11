@@ -1,0 +1,24 @@
+{
+  "sku_id": "GPU.H100.SXM.RESERVED.720H",
+  "spec_hash": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  "category": "committed-GPU/compute",
+  "unit": "gpu-reserved-720h-block",
+  "term_length": "PT720H",
+  "vfm_class": "B",
+  "attestation_endpoint": {
+    "vendor_domain": "api.examplecloud.com",
+    "api_schema": [
+      "$.entitlement.status",
+      "$.entitlement.activated_at",
+      "$.entitlement.instance_id"
+    ],
+    "zktls_provider_ids": [
+      "zktls-provider-01",
+      "zktls-provider-02"
+    ]
+  },
+  "tax_class": "compute-services",
+  "jurisdictions_allowed": [
+    "US"
+  ]
+}

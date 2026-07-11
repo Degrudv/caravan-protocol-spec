@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/principal.schema.json",
+  "title": "Principal",
+  "description": "Off-chain registry entity; hash-anchored on-chain (§5.1). The legal person or business behind one or more agents.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "principal_id",
+    "type",
+    "verification_tier",
+    "ubo_cluster_id",
+    "kyb_providers",
+    "jurisdiction",
+    "sanctions_status",
+    "caps",
+    "standing"
+  ],
+  "properties": {
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Canonical identifier for this principal."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["individual", "business"]
+    },
+    "verification_tier": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3],
+      "description": "KYC/KYB tier; see params.tiers T0-T3 for verify method and per_pool/monthly caps."
+    },
+    "ubo_cluster_id": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$",
+      "description": "Beneficial-owner cluster identifier (private). The envelope unit for caps, reputation, and insurance-payout linkage checks (params.identity)."
+    },
+    "kyb_providers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "KYB provider identifiers that screened this principal; multi-provider quorum required at T3 (params.tiers.T3)."
+    },
+    "jurisdiction": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "description": "ISO 3166-1 alpha-2 country code."
+    },
+    "sanctions_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["screened_at", "result"],
+      "properties": {
+        "screened_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "result": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Screening result code (implementation-defined, e.g. clear/flagged/blocked). OFAC/UN/EU screening is fail-closed and strict-liability per params.compliance."
+        }
+      }
+    },
+    "caps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["per_pool", "monthly"],
+      "properties": {
+        "per_pool": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "Maximum exposure per pool, USDC 6-decimal base units, string-encoded integer. See params.tiers for tier defaults."
+        },
+        "monthly": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "Maximum monthly exposure, USDC 6-decimal base units, string-encoded integer."
+        }
+      }
+    },
+    "standing": {
+      "type": "string",
+      "enum": ["good", "suspended", "banned"]
+    }
+  }
+}

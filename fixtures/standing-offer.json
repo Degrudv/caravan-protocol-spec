@@ -1,0 +1,38 @@
+{
+  "offer_id": "33333333-3333-4333-8333-333333333333",
+  "supplier_principal_id": "22222222-2222-4222-8222-222222222222",
+  "sku_id": "GPU.H100.SXM.RESERVED.720H",
+  "spec_hash": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  "tier_curve": [
+    {
+      "min_qty": 1,
+      "unit_price": "150000000"
+    },
+    {
+      "min_qty": 10,
+      "unit_price": "142000000"
+    },
+    {
+      "min_qty": 50,
+      "unit_price": "135000000"
+    }
+  ],
+  "reference_price_qty1": "150000000",
+  "reference_bond": "15000000",
+  "tier_fallback_rule": "next_valid_tier",
+  "capacity": {
+    "min": 10,
+    "max": 500
+  },
+  "expiry": "2026-07-25T18:00:00Z",
+  "delivery_deadline": "P7D",
+  "vfm_params": {
+    "class": "B",
+    "activation_test_endpoint": "https://api.examplecloud.com/v1/entitlements/activate-check",
+    "recheck_schedule": "weekly-then-monthly"
+  },
+  "supplier_sig": {
+    "signature": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "signer_address": "0xfedcba9876fedcba9876fedcba9876fedcba9876"
+  }
+}

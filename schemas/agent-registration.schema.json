@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/agent-registration.schema.json",
+  "title": "AgentRegistration",
+  "description": "Binds an autonomous agent to its principal (§5.1). The principal_id binding is what matters legally; pubkeys rotate with history preserved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["agent_did", "pubkeys", "principal_id", "delegation_sig", "a2a_card_url", "ai_disclosure"],
+  "properties": {
+    "agent_did": {
+      "type": "string",
+      "pattern": "^did:[a-zA-Z0-9]+:[a-zA-Z0-9._:%-]+$",
+      "description": "Decentralized Identifier (DID) for the agent."
+    },
+    "pubkeys": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Rotatable signing keys; history is preserved (never deleted, only marked revoked).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["public_key", "added_at", "status"],
+        "properties": {
+          "public_key": {
+            "type": "string",
+            "pattern": "^0x[a-fA-F0-9]+$",
+            "description": "Hex-encoded public key."
+          },
+          "added_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "revoked"]
+          }
+        }
+      }
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The binding that matters: this agent acts under this principal's delegated authority."
+    },
+    "delegation_sig": {
+      "$ref": "#/$defs/Eip712Signature",
+      "description": "Principal's authority grant and scope (EIP-712)."
+    },
+    "a2a_card_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of this agent's signed A2A Agent Card."
+    },
+    "erc8004_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional ERC-8004 interoperability reference (interop only)."
+    },
+    "ai_disclosure": {
+      "type": "boolean",
+      "const": true,
+      "description": "EU AI Act Article 50 automated-agent disclosure field. Always true for a registered Caravan agent."
+    }
+  },
+  "$defs": {
+    "Eip712Signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signature", "signer_address"],
+      "properties": {
+        "signature": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]+$",
+          "description": "Hex-encoded EIP-712 signature bytes."
+        },
+        "signer_address": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$"
+        },
+        "domain_hash": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{64}$",
+          "description": "Optional EIP-712 domain separator hash."
+        }
+      }
+    }
+  }
+}

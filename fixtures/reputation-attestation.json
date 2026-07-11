@@ -1,0 +1,12 @@
+{
+  "subject": "22222222-2222-4222-8222-222222222222",
+  "schema": "settled_volume",
+  "minted_by": "SettlementContract",
+  "uid": "0xf9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9",
+  "chain": "base-sepolia",
+  "attested_at": "2026-07-22T10:05:00Z",
+  "data": {
+    "settled_volume_usd_base_units": "2130000000",
+    "distinct_counterparty_clusters": 1
+  }
+}

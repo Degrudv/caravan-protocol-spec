@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/settlement.schema.json",
+  "title": "Settlement",
+  "description": "Per-unit settlement record for a cleared Pool (§5.1). Every unit settles independently; one buyer's problem never blocks another's release.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["settlement_id", "pool_id", "per_unit", "fees", "attestations"],
+  "properties": {
+    "settlement_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "pool_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "per_unit": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Each entry is an OrderLine ($defs) sub-schema, keyed by buyer_principal_hash/mode/state.",
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/order-line.schema.json#/$defs/OrderLine"
+      }
+    },
+    "fees": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supplier_bps_paid", "buyer_bps_paid", "verification_flat"],
+      "description": "On-chain, auditable fee record (§5.1).",
+      "properties": {
+        "supplier_bps_paid": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Basis points; see params.fees.supplierBps."
+        },
+        "buyer_bps_paid": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Basis points; see params.fees.buyerBps."
+        },
+        "verification_flat": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "Flat verification fee, USDC 6-decimal base units, string-encoded integer; see params.fees.verificationFlatUsdPerLeg."
+        }
+      }
+    },
+    "attestations": {
+      "type": "array",
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/fulfillment-attestation.schema.json"
+      }
+    }
+  }
+}

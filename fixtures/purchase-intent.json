@@ -1,0 +1,33 @@
+{
+  "intent_id": "66666666-6666-4666-8666-666666666666",
+  "agent_did": "did:web:agent.buyer-example.com",
+  "principal_id": "0xd6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6",
+  "sku_id": "GPU.H100.SXM.RESERVED.720H",
+  "qty": {
+    "min": 10,
+    "max": 20
+  },
+  "price_ceiling": "148000000",
+  "substitution_policy": "none",
+  "duration": "standing_30d",
+  "expiry": "2026-08-10T18:00:00Z",
+  "window_id": "2026-W29-GPU-COMPUTE",
+  "delivery_constraints": {
+    "jurisdiction": "US",
+    "latest_delivery": "2026-08-01T00:00:00Z"
+  },
+  "funds_preauth": {
+    "token": "0xabcdef1234abcdef1234abcdef1234abcdef1234",
+    "amount": "2960000000",
+    "escrow_permit_sig": {
+      "signature": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "signer_address": "0x9876543210987654321098765432109876543210",
+      "nonce": "1",
+      "deadline": "2026-07-18T18:00:00Z"
+    }
+  },
+  "agent_sig": {
+    "signature": "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "signer_address": "0x9876543210987654321098765432109876543210"
+  }
+}

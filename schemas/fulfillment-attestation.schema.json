@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/fulfillment-attestation.schema.json",
+  "title": "FulfillmentAttestation",
+  "description": "Machine evidence that a delivery predicate resolved (§5.1, §6.2). Dual timestamps distinguish when the attestation was made from what it observed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "evidence_hash", "signer_set", "created_at", "observed_at", "predicate_result"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "onchain_transfer",
+        "vendor_api_zktls",
+        "oracle_pull_quorum",
+        "carrier_pod",
+        "authenticity_check",
+        "title_registry"
+      ]
+    },
+    "evidence_hash": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$"
+    },
+    "signer_set": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Attester identifiers; quorum diversity (different orgs, different infra) is required for oracle_pull_quorum (§6.4)."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the attestation was made."
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "What point in time the attestation observed."
+    },
+    "predicate_result": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/dispute.schema.json",
+  "title": "Dispute",
+  "description": "Bonded challenge against a settlement's order line(s) (§5.1, §6.4). Per-unit: never blocks other buyers. Prose is inadmissible; evidence is machine evidence only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dispute_id",
+    "settlement_id",
+    "unit_refs",
+    "challenger_principal_id",
+    "bond",
+    "reason_code",
+    "evidence",
+    "encrypted_evidence_ref",
+    "panel",
+    "appeal",
+    "outcome",
+    "slashes"
+  ],
+  "properties": {
+    "dispute_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "settlement_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "unit_refs": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The specific order line(s) this dispute concerns, by buyer_principal_hash.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["buyer_principal_hash"],
+        "properties": {
+          "buyer_principal_hash": {
+            "type": "string",
+            "pattern": "^0x[a-fA-F0-9]{64}$"
+          }
+        }
+      }
+    },
+    "challenger_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Revealed only post-ruling per §6.7 (challenger identity is not exposed while the dispute is open)."
+    },
+    "bond": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "USDC 6-decimal base units, string-encoded integer. params.disputes.challengeBond = max(1% of disputed value, $100)."
+    },
+    "reason_code": {
+      "type": "string",
+      "enum": [
+        "NON_DELIVERY",
+        "LATE_DELIVERY",
+        "NOT_AS_DESCRIBED",
+        "ENTITLEMENT_INACTIVE",
+        "FUNCTIONAL_TEST_FAILED",
+        "DUPLICATE_ENTITLEMENT",
+        "REFERENCE_PRICE_FALSIFIED",
+        "AUTHENTICITY_FAILURE",
+        "TITLE_TRANSFER_FAILURE",
+        "OTHER_MACHINE_EVIDENCE"
+      ],
+      "description": "Enumerated codes only; free-text reason is inadmissible by contract (§6.4). This closed set is an implementation-level enumeration of the failure modes named across §6.2-6.4; the plan mandates enumeration but does not itself list literal codes."
+    },
+    "evidence": {
+      "type": "array",
+      "description": "Machine evidence hashes only (signed API responses, zkTLS transcripts, oracle pull records). May be empty for an evidence-free filing, which is precisely the case that suffers 100% bond forfeiture (§6.4).",
+      "items": {
+        "type": "string",
+        "pattern": "^0x[a-fA-F0-9]{64}$"
+      }
+    },
+    "encrypted_evidence_ref": {
+      "type": "string",
+      "format": "uri",
+      "description": "URI to the full evidence package, encrypted off-chain."
+    },
+    "panel": {
+      "description": "Null until/unless the dispute survives predicate re-runs and escalates to the 3-operator verifier panel (§6.4).",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["members", "ruling", "ruling_predicate_trace"],
+          "properties": {
+            "members": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 },
+              "description": "3 independent, staked, KYB'd operators from different organizations."
+            },
+            "ruling": {
+              "type": "string",
+              "enum": ["UPHELD", "REJECTED"]
+            },
+            "ruling_predicate_trace": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Reference (hash or URI) to the deterministic predicate re-run trace; any staker can re-run it (§6.4)."
+            }
+          }
+        }
+      ]
+    },
+    "appeal": {
+      "description": "Null unless the panel ruling is appealed. 5-of-7 fresh operators, doubled bond, final (§6.4).",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["members", "bond_2x", "final"],
+          "properties": {
+            "members": {
+              "type": "array",
+              "minItems": 7,
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "bond_2x": {
+              "type": "boolean",
+              "description": "True when the doubled appeal bond has been posted."
+            },
+            "final": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        }
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["UPHELD", "REJECTED"]
+    },
+    "slashes": {
+      "type": "array",
+      "description": "Slash events triggered by the ruling, feeding the §6.5 remedy waterfall.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["target_principal_id", "amount"],
+        "properties": {
+          "target_principal_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+            "description": "USDC 6-decimal base units, string-encoded integer."
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

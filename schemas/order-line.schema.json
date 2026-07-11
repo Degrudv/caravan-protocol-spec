@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/order-line.schema.json",
+  "title": "OrderLine",
+  "description": "Shared per-buyer order-line sub-schema (§5.1). Not an independently minted top-level entity: it is the $defs shape referenced by Pool.members (as a pool-membership record: intent_id/qty/join_ts) and by Settlement.per_unit (as a settlement record: buyer_principal_hash/qty/mode/stream/usage/state). Only `qty` is universally required so the same $defs schema can validate both lifecycle stages; this file is also independently instantiable (root $ref to the same $defs) so it can carry its own fixture and negative test like every other schema in this repository. Per §6.8: one disputed order line can never affect any other order line, and one entitlement ID can never satisfy two order lines.",
+  "$ref": "#/$defs/OrderLine",
+  "$defs": {
+    "OrderLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["qty"],
+      "properties": {
+        "intent_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "PurchaseIntent.intent_id this order line was matched from. Present once the line is revealed as a Pool member at HARD_LOCK."
+        },
+        "buyer_principal_hash": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{64}$",
+          "description": "keccak256 hash of the buyer's principal_id. Present on Settlement.per_unit lines; the raw principal_id is never carried on the order line."
+        },
+        "qty": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Cleared/settled quantity of this order line, denominated in the SKU's unit."
+        },
+        "join_ts": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 timestamp the member joined the pool. Used for pro-rata priority on partial fills (§5.3)."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["atomic", "stream", "usage_epoch", "optimistic"],
+          "description": "Settlement mode for this line (§6.1). atomic = VFM-A one-tx delivery+payment; stream = StreamSettle for termed entitlements; usage_epoch = UsageSettle for consumption products; optimistic = released pending challenge window, bounded by the §6.6 invariant."
+        },
+        "stream": {
+          "description": "Populated only when mode = \"stream\"; null otherwise (§6.1 streaming settlement for termed entitlements).",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["rate", "verified_through_ts"],
+              "properties": {
+                "rate": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$",
+                  "description": "Streaming release rate in USDC 6-decimal base units per streaming interval (e.g. \"2958333\" = 2.958333 USDC). String-encoded integer to avoid floating-point precision loss."
+                },
+                "verified_through_ts": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The stream has been re-verified and released through this timestamp; unreleased balance always covers the remaining term (§6.6)."
+                }
+              }
+            }
+          ]
+        },
+        "usage": {
+          "description": "Populated only when mode = \"usage_epoch\"; null otherwise (§6.1 usage-metered settlement for consumption products).",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["funded_max", "epoch_length", "receipts", "released_to_date", "unused_auto_refund_at"],
+              "properties": {
+                "funded_max": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$",
+                  "description": "Maximum authorized usage, in USDC 6-decimal base units, string-encoded integer."
+                },
+                "epoch_length": {
+                  "type": "string",
+                  "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(?=\\d)(\\d+H)?(\\d+M)?(\\d+S)?)?$",
+                  "description": "ISO-8601 duration of one metering epoch (e.g. \"P1D\" daily, \"PT6H\" per 6-hour block)."
+                },
+                "receipts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["meter_sig", "gateway_sig"],
+                    "properties": {
+                      "meter_sig": {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]+$",
+                        "description": "Independent-meter signed usage receipt for this epoch."
+                      },
+                      "gateway_sig": {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]+$",
+                        "description": "Supplier-gateway signed usage receipt for this epoch."
+                      }
+                    }
+                  }
+                },
+                "released_to_date": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$",
+                  "description": "USDC 6-decimal base units released across completed epochs so far, string-encoded integer."
+                },
+                "unused_auto_refund_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp at which unused escrow auto-returns to the buyer per §6.1."
+                }
+              }
+            }
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": ["PENDING", "ATTESTED", "RELEASED", "CHALLENGED", "REFUNDED"],
+          "description": "Per-unit settlement state machine: PENDING -> ATTESTED -> RELEASED | CHALLENGED | REFUNDED (§5.1)."
+        }
+      }
+    }
+  }
+}

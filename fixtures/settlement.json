@@ -1,0 +1,35 @@
+{
+  "settlement_id": "55555555-5555-4555-8555-555555555555",
+  "pool_id": "44444444-4444-4444-8444-444444444444",
+  "per_unit": [
+    {
+      "buyer_principal_hash": "0xd6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6",
+      "qty": 15,
+      "mode": "stream",
+      "stream": {
+        "rate": "2958333",
+        "verified_through_ts": "2026-07-22T10:00:00Z"
+      },
+      "usage": null,
+      "state": "ATTESTED"
+    }
+  ],
+  "fees": {
+    "supplier_bps_paid": 100,
+    "buyer_bps_paid": 50,
+    "verification_flat": "250000"
+  },
+  "attestations": [
+    {
+      "type": "vendor_api_zktls",
+      "evidence_hash": "0xe7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7",
+      "signer_set": [
+        "oracle-operator-01",
+        "oracle-operator-02"
+      ],
+      "created_at": "2026-07-15T10:05:00Z",
+      "observed_at": "2026-07-15T10:04:50Z",
+      "predicate_result": true
+    }
+  ]
+}

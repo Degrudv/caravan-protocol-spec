@@ -1,0 +1,27 @@
+{
+  "pool_id": "44444444-4444-4444-8444-444444444444",
+  "window_id": "2026-W29-GPU-COMPUTE",
+  "sku_id": "GPU.H100.SXM.RESERVED.720H",
+  "offer_id": "33333333-3333-4333-8333-333333333333",
+  "state": "HARD_LOCK",
+  "members": [
+    {
+      "intent_id": "66666666-6666-4666-8666-666666666666",
+      "qty": 15,
+      "join_ts": "2026-07-15T10:00:00Z"
+    }
+  ],
+  "clearing": {
+    "tier_reached": 2,
+    "uniform_price": "142000000",
+    "cleared_qty": 15
+  },
+  "fee_schedule_pinned": "1.0",
+  "policy_version_pinned": "1.0",
+  "escrow_addr": "0x1234567890123456789012345678901234567890",
+  "match_proof": {
+    "intents_root": "0xc4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4",
+    "transcript_commit": "0xc5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5",
+    "tee_attestation": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  }
+}

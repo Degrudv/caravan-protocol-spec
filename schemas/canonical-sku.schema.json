@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Degrudv/caravan-protocol-spec/main/schemas/canonical-sku.schema.json",
+  "title": "CanonicalSKU",
+  "description": "The catalog is the shared language of the network (§5.1). Disputes are decided against spec_hash, never against prose.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sku_id",
+    "spec_hash",
+    "category",
+    "unit",
+    "term_length",
+    "vfm_class",
+    "attestation_endpoint",
+    "tax_class",
+    "jurisdictions_allowed"
+  ],
+  "properties": {
+    "sku_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]+(\\.[A-Z0-9]+)*$",
+      "description": "Dotted canonical SKU identifier, e.g. \"GPU.H100.SXM.RESERVED.720H\"."
+    },
+    "spec_hash": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$",
+      "description": "keccak256(spec_doc). Disputes are decided against this hash, not free-text description."
+    },
+    "category": {
+      "type": "string",
+      "enum": ["committed-GPU/compute", "inference-credits", "SaaS-via-authorized-distributors"],
+      "description": "Launch-scope category (params.launchScope.categories); the enumerable set expands post-launch."
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The tradable unit this SKU is quoted and cleared in, e.g. \"gpu-reserved-720h-block\"."
+    },
+    "term_length": {
+      "type": ["string", "null"],
+      "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(?=\\d)(\\d+H)?(\\d+M)?(\\d+S)?)?$",
+      "description": "ISO-8601 duration for termed entitlements (drives StreamSettle re-verification cadence, §6.1), or null for untermed/perpetual SKUs."
+    },
+    "vfm_class": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D"],
+      "description": "Value-for-money predicate class (§6.2, params.vfm). Launch classes are A and B only (params.vfm.launchClasses)."
+    },
+    "attestation_endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vendor_domain", "api_schema", "zktls_provider_ids"],
+      "description": "Vendor-of-record, domain-pinned attestation source (§6.4 anti-source-collapse).",
+      "properties": {
+        "vendor_domain": {
+          "type": "string",
+          "format": "hostname",
+          "description": "Domain-pinned vendor-of-record host; a seller that is not the vendor can never operate this endpoint."
+        },
+        "api_schema": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Set of JSONPath expressions the verifier evaluates against the vendor API response."
+        },
+        "zktls_provider_ids": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Authorized zkTLS provider identifiers for this SKU's attestation transcripts."
+        }
+      }
+    },
+    "tax_class": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jurisdictions_allowed": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z]{2}$"
+      },
+      "description": "ISO 3166-1 alpha-2 country codes this SKU may settle into."
+    }
+  }
+}

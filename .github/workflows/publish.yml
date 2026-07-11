@@ -1,0 +1,66 @@
+name: publish
+
+# Publishes @degrudv/caravan-spec to GitHub Packages (npm.pkg.github.com).
+#
+# Trigger semantics:
+#   - workflow_dispatch: manual run. `dry_run` defaults to true, so the common case
+#     ("did the publish step even work?") never actually publishes a package version.
+#     Set dry_run=false explicitly to perform a real publish from workflow_dispatch.
+#   - push of a `v*` tag: treated as an intentional release and always performs a real
+#     publish (tags have no dry_run input to read, and pushing a version tag is itself
+#     the "yes, really publish" signal).
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (does not publish a real package version)'
+        type: boolean
+        default: true
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://npm.pkg.github.com
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Determine dry-run mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.dry_run }}" != "false" ]; then
+            echo "dry_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "dry_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish (dry run)
+        if: steps.mode.outputs.dry_run == 'true'
+        run: npm publish --access restricted --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish
+        if: steps.mode.outputs.dry_run == 'false'
+        run: npm publish --access restricted
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

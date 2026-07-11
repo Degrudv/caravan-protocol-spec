@@ -1,0 +1,109 @@
+{
+  "_comment": "Caravan authoritative parameter manifest. Canonical source of truth for Sol's build. If prose in the directive disagrees with this file, this file wins. Values are production defaults; all are timelock-configurable in prod.",
+  "version": "1.0",
+  "chain": { "dev": "base-sepolia", "devChainId": 84532, "prod": "base", "prodChainId": 8453, "prodEnabled": false, "devDefaultRuntime": "local-anvil-fork-of-base-sepolia" },
+  "settlementAsset": { "symbol": "USDC", "decimals": 6, "devSource": "circle-base-sepolia-or-MockUSDC", "issuerPolicy": "GENIUS-permitted-only" },
+  "fees": {
+    "supplierBps": 100, "supplierCapUsdPerPoolPerSupplier": 10000,
+    "buyerBps": 50, "buyerCapUsdPerBuyerPerPool": 2500,
+    "verificationFlatUsdPerLeg": 0.25,
+    "founderSupplierBps": 50, "founderLockMonths": 24,
+    "declineCurve": [ { "gmvUsd": 100000000, "supplierBps": 80 }, { "gmvUsd": 500000000, "supplierBps": 65 } ],
+    "changeTimelockDays": 30, "pinnedPerPool": true
+  },
+  "feeSplit": {
+    "treasuryPct": 50, "originatorMaxPct": 25, "verifiersPct": 10, "insurancePct": 15,
+    "unclaimedRoutesTo": "treasury",
+    "antiStackingRule": "(origination+bounty) < fee - verifier - insurance",
+    "sameOrderLineOneClusterOriginationXorBounty": true
+  },
+  "tiers": {
+    "T0": { "verify": "none", "perPoolUsd": 0, "monthlyUsd": 0, "rights": "read-only" },
+    "T1": { "verify": "kyc-or-imported-attestation", "perPoolUsd": 2500, "monthlyUsd": 10000 },
+    "T2": { "verify": "kyb-ubo", "perPoolUsd": 50000, "monthlyUsd": 250000 },
+    "T3": { "verify": "multi-provider-kyb + 60d-standing + settled-history", "perPoolUsd": null, "monthlyUsd": null, "nullMeans": "no fixed per-tier cap; bounded only by global invariant k=0.5" }
+  },
+  "identity": {
+    "envelopeUnit": "ubo-cluster", "reputationMinter": "SettlementContract-only",
+    "reputationScore": "log(volume) x distinct-ubo-cluster-count with per-pair caps",
+    "graphLinkageDeniesInsurancePayout": true
+  },
+  "invariant": {
+    "k_globalOptimistic": 0.5, "insuranceCapPerCluster": "cumulative_fees_paid + bonds_posted",
+    "streamRecheck": { "months1to2": "weekly", "after": "monthly" }, "latentFraudTailDays": 30, "tailPct": 10
+  },
+  "windows": {
+    "cadence": "weekly", "softLockLeadHours": 24, "antiGriefingDepositUsd": 25, "antiGriefingDepositPct": 2,
+    "challengeWindowHoursDigital": 72, "challengeWindowDaysPhysical": 7, "simMayCompressCadence": true
+  },
+  "disputes": {
+    "challengeBond": "max(1%_of_disputed, $100)", "slashFrivolousPct": 100, "slashGoodFaithLoserPct": 50,
+    "panel": "3 independent staked KYB'd operators; 2-of-3 multisig on disputed funds only", "appeal": "5-of-7, 2x bond, final",
+    "evidence": "machine-only: signed API responses, zkTLS transcripts, oracle pull records; prose inadmissible"
+  },
+  "vfm": {
+    "A": "atomic-onchain",
+    "B": "vendor-of-record API (zkTLS AND 2-of-3 pull-quorum) + functional-activation-test + unique-entitlement-id",
+    "C": "carrier-POD + authenticity (Phase 3, capped, 25% seller bond, 7d)",
+    "D": "licensed-title/escrow oracle (Phase 4)",
+    "launchClasses": [ "A", "B" ]
+  },
+  "referencePrice": {
+    "crossSourceFloor": "min across >=2 authorized sources",
+    "singleSourceBondSlashableBy": "zkTLS proof of vendor public rate card"
+  },
+  "matcher": {
+    "trust": "TEE-attested (AWS Nitro; mock attestation on testnet, real enclave post-G1) + Merkle-committed intents + inclusion receipts",
+    "wrongMatch": "slash operator bond", "roadmap": "ZK match-optimality proof"
+  },
+  "growthController": {
+    "objective": "owner_profit_net_of_bounty",
+    "counts": "externally-attested participants + realized-repeat settlements only",
+    "budget": "fraction of realized treasury inflow; timelocked per-segment caps; never deficit"
+  },
+  "supplierScout": {
+    "outreach": "consent-based pull only (accepts-RFQ flag or opt-in registry)",
+    "noScraping": true, "responseBond": true, "demandSignal": "k-anonymized, delayed, nonced"
+  },
+  "licensing": { "periphery": "Apache-2.0", "core": "BSL-1.1", "convertsToGPLYears": 4, "cla": true, "trademarkReserved": true },
+  "continuity": { "custody": "foundation/purpose-trust M-of-N multisig + timelock + pre-appointed successor", "token": "none-ever", "adminCanMoveEscrow": false, "solHoldsProductionKeys": false },
+  "compliance": {
+    "model": "fail-closed: agents block, cannot clear; only procured vendor unblocks",
+    "screening": "OFAC/UN/EU per-tx (strict liability); OFAC-SDN public list is the pre-vendor fallback",
+    "geofence": "MTL-required contexts refused at SDK/registry"
+  },
+  "launchScope": {
+    "region": "US", "segment": "B2B", "supply": "authorized-source-only",
+    "categories": [ "committed-GPU/compute", "inference-credits", "SaaS-via-authorized-distributors" ],
+    "excluded": [ "consumer-credit", "stored-value/gift-cards", "securities/commodities", "sanctioned-jurisdictions", "regulated-medical/defense/controlled", "physical-goods(pre-Phase3)", "vehicles(pre-Phase4)" ]
+  },
+  "budgetCaps": { "devCloudMonthlyUsdCap": 500, "escalateAboveCap": true, "realMoney": "never-without-APPROVE-token", "noBilledApplyBeforeG1": true },
+  "repos": [
+    { "name": "caravan-protocol-spec", "license": "Apache-2.0" },
+    { "name": "caravan-contracts-core", "license": "BSL-1.1" },
+    { "name": "caravan-matcher", "license": "BSL-1.1" },
+    { "name": "caravan-sdk", "license": "Apache-2.0" },
+    { "name": "caravan-supplier-gateway", "license": "Apache-2.0" },
+    { "name": "caravan-verifier-sdk", "license": "Apache-2.0" },
+    { "name": "caravan-mcp-a2a", "license": "Apache-2.0" },
+    { "name": "caravan-ops-agents", "license": "private" },
+    { "name": "caravan-infra", "license": "private" },
+    { "name": "caravan-dashboard", "license": "Apache-2.0" },
+    { "name": "caravan-ops", "license": "private" }
+  ],
+  "stack": {
+    "solidity": "^0.8.24", "toolchain": "foundry", "libs": "openzeppelin-contracts-v5",
+    "node": "20-LTS", "ts": "5.x-strict", "http": "fastify", "chainClient": "viem", "pkg": "pnpm",
+    "iac": "aws-cdk-v2-typescript", "ci": "github-actions", "secretScan": "gitleaks"
+  },
+  "gates": {
+    "G0-GH-ORG": "GitHub org + token",
+    "G1-AWS-DEV": "AWS dev account/role (no billed apply before this)",
+    "G5-LICENSE": "licensing counsel engaged (BSL grant + CLA)",
+    "G5-PUBLISH": "approval to go public + publish packages",
+    "G6-AUDIT": "two audit firms engaged",
+    "G6-ENTITY": "operating entity + foundation/trust formed",
+    "G6-COMPLIANCE": "compliance/fincrime vendor signed",
+    "G6-MAINNET": "mainnet funding + explicit approval token"
+  }
+}
